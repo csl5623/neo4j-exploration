@@ -1,0 +1,48 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.neo4j:neo4j:2026.05.0'
+
+    implementation("org.neo4j.driver:neo4j-java-driver:6.1.0")
+    implementation platform("org.springframework.ai:spring-ai-bom:1.1.7")
+
+    //Transformers
+    implementation ('org.springframework.ai:spring-ai-transformers')
+    //Ollama
+    implementation ('org.springframework.ai:spring-ai-ollama')
+
+    //openai
+    implementation ('org.springframework.ai:spring-ai-openai')
+
+    implementation ('org.neo4j.procedure:apoc-core:2026.05.0')
+    implementation ('org.neo4j.procedure:apoc-common:2026.05.0')
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    // Define the main class for the application.
+    // mainClass = 'edu.rit.gdb.grading.ScratchEmbeddings'
+    // mainClass = 'edu.rit.gdb.grading.CommunityEdition'
+    // mainClass = 'edu.rit.gdb.grading.VectorEmbeddings'
+    mainClass = 'edu.rit.gdb.grading.EmbeddingsEmbedded'
+
+}
+
+tasks.withType(CreateStartScripts).each { task ->
+    task.doLast {
+        String text = task.windowsScript.text
+        text = text.replaceFirst(/(set CLASSPATH=%APP_HOME%\\lib\\).*/, { "${it[1]}*" })
+        task.windowsScript.write text
+    }
+}
