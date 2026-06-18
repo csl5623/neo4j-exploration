@@ -35,9 +35,8 @@ application {
     // mainClass = 'edu.rit.gdb.grading.ScratchEmbeddings'
     // mainClass = 'edu.rit.gdb.grading.CommunityEdition'
     // mainClass = 'edu.rit.gdb.grading.VectorEmbeddings'
-    mainClass = 'edu.rit.gdb.grading.EmbeddingsEmbedded'
-    
-    // mainClass = 'edu.rit.gdb.grading.ImportGraphML'
+    // mainClass = 'edu.rit.gdb.grading.EmbeddingsEmbedded'
+//    mainClass = 'edu.rit.gdb.grading.ImportGraphML'
 }
 
 tasks.withType(CreateStartScripts).each { task ->

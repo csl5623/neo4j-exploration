@@ -22,13 +22,15 @@ Before running program:
 - Dowload Ollama: https://docs.ollama.com/quickstart
     1. Pull embedding model
         1. https://ollama.com/library/nomic-embed-text
-
+- In build.gradle uncomment:  mainClass = 'edu.rit.gdb.grading.EmbeddingsEmbedded'
 
 To run program:
 
 [Set $JAVA_HOME.]
 
 Run:
+
+
 ./gradlew build
 
 ./gradlew installDist
@@ -47,3 +49,21 @@ Instructions:
 - There must be no database running in the background.
 
 
+## POC 2: Import Knowledge Graphs 
+Before running program:
+
+- In build.gradle uncomment:  mainClass = 'edu.rit.gdb.grading.ImportGraphML'
+- Make sure : KGs_Export_Original directory is available in DB_FOLDER/database
+
+To run program:
+
+[Set $JAVA_HOME.]
+
+Run:
+
+
+./gradlew build
+
+./gradlew installDist
+
+./app/build/install/app/bin/app DB_FOLDER database GRAPHML_FILE 
