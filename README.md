@@ -1,7 +1,7 @@
 
 ## POC to Explore Vector Embeddings in Neo4j Java Embedded
 
-### POC explores creating vector embedddings using Ollama models and indexes using Neo4j embedded in Java
+### POC 1: explores creating vector embedddings using Ollama models and indexes using Neo4j embedded in Java
 
 - Program :
     - loads data into Neo4j database
