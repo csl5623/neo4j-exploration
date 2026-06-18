@@ -1,13 +1,30 @@
 
 ## POC to Explore Vector Embeddings in Neo4j Java Embedded
 
+### POC explores creating vector embedddings using Ollama models and indexes using Neo4j embedded in Java
+
+- Program :
+    - loads data into Neo4j database
+    -  creates embeddings with open source Ollama models
+    - Computes embeddings similarities
+    - Creates a vector index
+    - Uses SEARCH cypher clause to find similar nodes based on embeddings 
+    - Exports data into GraphML file
+
 Resources:
 - Embeded Neo4j in Java: https://neo4j.com/docs/java-reference/current/java-embedded/
 - Embeddings and Vector Indexes tutorial:https://neo4j.com/docs/genai/tutorials/current/embeddings-vector-indexes/
 - Spring AI framework to support AI models: https://docs.spring.io/spring-ai/reference/getting-started.html#dependency-management
     -Ollama: https://docs.spring.io/spring-ai/reference/api/embeddings/ollama-embeddings.html 
 
-To install:
+
+Before running program:
+- Dowload Ollama: https://docs.ollama.com/quickstart
+    1. Pull embedding model
+        1. https://ollama.com/library/nomic-embed-text
+
+
+To run program:
 
 [Set $JAVA_HOME.]
 
@@ -15,9 +32,6 @@ Run:
 ./gradlew build
 
 ./gradlew installDist
-
-
-To run program:
 
 ./app/build/install/app/bin/app DB_FOLDER database GRAPHML_FILE 
 
