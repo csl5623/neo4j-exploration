@@ -5,70 +5,47 @@ import java.time.Duration;
 import java.util.Map;
 import java.security.SecureRandom;
 
+import org.neo4j.common.DependencyResolver;
 import org.neo4j.configuration.GraphDatabaseSettings;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.neo4j.dbms.api.DatabaseManagementService;
-import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.io.fs.FileUtils;
 import org.neo4j.kernel.api.procedure.GlobalProcedures;
 import org.neo4j.kernel.internal.GraphDatabaseAPI;
-import org.springframework.ai.document.MetadataMode;
-import org.springframework.ai.embedding.EmbeddingRequest;
-import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.ollama.OllamaEmbeddingModel;
-import org.springframework.ai.ollama.api.OllamaApi;
-import org.springframework.ai.ollama.api.OllamaEmbeddingOptions;
-import org.springframework.ai.ollama.api.OllamaModel;
-import org.springframework.ai.ollama.management.ModelManagementOptions;
-import org.springframework.ai.transformers.TransformersEmbeddingModel;
-import org.springframework.core.io.ClassPathResource;
+import org.neo4j.graphdb.Transaction;
+import apoc.coll.Coll;
 
-import io.micrometer.observation.ObservationRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.neo4j.graphdb.Node;
+
 
 public class ScratchEmbeddings {
-
-
 	public static void accessEmbeddings(String neo4jFolder,String database){
 
 		try (DatabaseManagementService service = getNeo4jConnection(neo4jFolder, database);) {
 			SecureRandom secureRand = new SecureRandom();
 			GraphDatabaseService db = service.database(GraphDatabaseSettings.initial_default_database.defaultValue());
-            String query = """
-						MATCH (a:Player {name: "Alessandro Budel"})
-						RETURN a
-						""";
-			try ( Transaction tx = db.beginTx();){
-				try (Result result = tx.execute(query)){
-					while(result.hasNext()){
-						Map<String, Object> row = result.next();
-						Node player = (Node) row.get("a");
-						float[] embedding = (float[]) player.getProperty("embedding");
-						float secureFloat = secureRand.nextFloat();
-						embedding[0] = secureFloat;
-						player.setProperty("embedding", embedding);
-						tx.commit();
-					}
-				}catch (Exception oops) {
-
-				}
-			}
+            
+			DependencyResolver resolver = ((GraphDatabaseAPI) db).getDependencyResolver();
+			GlobalProcedures procedures = resolver.resolveDependency(
+					GlobalProcedures.class, DependencyResolver.SelectionStrategy.SINGLE);
 			
+			procedures.registerFunction(Coll.class);
+			
+			String query = """
+						MATCH (a:Player {name: "Alessandro Budel"})
+						SET a.embedding = apoc.coll.set(a.embedding, 0, $new_value);
+						""";
+			float secureFloat = secureRand.nextFloat();
+			
+			try ( Transaction tx = db.beginTx();){
+					Result result2 = tx.execute(query,Map.of("new_value",secureFloat));
+					System.out.println(result2.resultAsString());
+				tx.commit();
+			}
 			service.shutdown();
 			
 		} catch (Exception oops) {
@@ -228,9 +205,9 @@ public static void loadPlayerData(String neo4jFolder,String database){
 	public static void main(String[] args) {
 		final String neo4jFolder = args[0], database = args[1];
 
-		// loadPlayerData(neo4jFolder, database);
-		// embeddings(neo4jFolder, database);
-		// createVectorIndex(neo4jFolder,database);
+		loadPlayerData(neo4jFolder, database);
+		embeddings(neo4jFolder, database);
+		createVectorIndex(neo4jFolder,database);
 		getChangedEmbeddings(neo4jFolder,database);
 		accessEmbeddings(neo4jFolder, database);
 		getChangedEmbeddings(neo4jFolder,database);
@@ -266,7 +243,6 @@ public static void loadPlayerData(String neo4jFolder,String database){
 			}
 		});
 	}
-
 	
 
 }

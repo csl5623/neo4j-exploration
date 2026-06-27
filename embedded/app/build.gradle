@@ -32,7 +32,7 @@ java {
 
 application {
     // Define the main class for the application.
-    // mainClass = 'edu.rit.gdb.grading.ScratchEmbeddings'
+    mainClass = 'edu.rit.gdb.grading.ScratchEmbeddings'
     // mainClass = 'edu.rit.gdb.grading.CommunityEdition'
     // mainClass = 'edu.rit.gdb.grading.VectorEmbeddings'
     // mainClass = 'edu.rit.gdb.grading.EmbeddingsEmbedded'
